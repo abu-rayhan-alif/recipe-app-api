@@ -3,9 +3,7 @@ Serializers for the user API View.
 """
 from django.contrib.auth import (get_user_model,authenticate)
 from django.utils.translation import gettext as _
-
 from rest_framework import serializers
-
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for the user object."""
@@ -35,6 +33,7 @@ class AuthTokenSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(
         style={'input_type': 'password'},
+
         trim_whitespace=False,
     )
 
@@ -44,7 +43,9 @@ class AuthTokenSerializer(serializers.Serializer):
         password = attrs.get('password')
         user = authenticate(
             request=self.context.get('request'),
+
             username=email,
+            
             password=password,
         )
         if not user:
