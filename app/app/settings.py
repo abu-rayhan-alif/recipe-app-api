@@ -144,8 +144,12 @@ STATIC_URL = '/static/'
 STATIC_URL = '/static/static/'
 MEDIA_URL = '/static/media/'
 
-MEDIA_ROOT = '/vol/web/media'
-STATIC_ROOT = '/vol/web/static'
+if os.environ.get('DB_NAME'):
+    MEDIA_ROOT = '/vol/web/media'
+    STATIC_ROOT = '/vol/web/static'
+else:
+    MEDIA_ROOT = BASE_DIR / 'media'
+    STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

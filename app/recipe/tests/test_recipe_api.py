@@ -441,7 +441,8 @@ class ImageUploadTests(TestCase):
         self.recipe = create_recipe(user=self.user)
 
     def tearDown(self):
-        self.recipe.image.delete()
+        if getattr(self.recipe.image, 'name', None):
+            self.recipe.image.delete(save=False)
 
     def test_upload_image(self):
         """Test uploading an image to a recipe."""
