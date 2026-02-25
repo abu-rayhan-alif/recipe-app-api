@@ -10,13 +10,16 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
-# Create your models here.
+
+
 def recipe_image_file_path(instance, filename):
     """Generate file path for new recipe image."""
     ext = os.path.splitext(filename)[1]
     filename = f'{uuid.uuid4()}{ext}'
 
     return os.path.join('uploads', 'recipe', filename)
+
+
 class UserManager(BaseUserManager):
     """Manager for users."""
 
@@ -29,6 +32,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
 
         return user
+
     def create_superuser(self, email, password):
         """Create and return a new superuser."""
         user = self.create_user(email, password)
@@ -65,8 +69,10 @@ class Recipe(models.Model):
     tags = models.ManyToManyField('Tag')
     ingredients = models.ManyToManyField('Ingredient')
     image = models.ImageField(null=True, upload_to=recipe_image_file_path)
+
     def __str__(self):
         return self.title
+
 
 class Tag(models.Model):
     """Tag for filtering recipes."""
@@ -78,6 +84,7 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Ingredient(models.Model):
     """Ingredient for recipes."""

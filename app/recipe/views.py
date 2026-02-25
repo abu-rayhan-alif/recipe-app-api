@@ -1,4 +1,3 @@
-from django.shortcuts import render
 """
 Views for the recipe APIs
 """
@@ -20,13 +19,14 @@ from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-# Create your views here.
 from core.models import (
     Recipe,
     Tag,
-     Ingredient,
+    Ingredient,
 )
 from recipe import serializers
+
+
 @extend_schema_view(
     list=extend_schema(
         parameters=[
@@ -43,7 +43,6 @@ from recipe import serializers
         ]
     )
 )
-
 class RecipeViewSet(viewsets.ModelViewSet):
     """View for manage recipe APIs."""
     serializer_class = serializers.RecipeSerializer
@@ -58,7 +57,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Retrieve recipes for authenticated user."""
-        #return self.queryset.filter(user=self.request.user).order_by('-id')
         tags = self.request.query_params.get('tags')
         ingredients = self.request.query_params.get('ingredients')
         queryset = self.queryset
@@ -72,6 +70,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return queryset.filter(
             user=self.request.user
         ).order_by('-id').distinct()
+
     def get_serializer_class(self):
         """Return the serializer class for request."""
         if self.action == 'list':
@@ -80,10 +79,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return serializers.RecipeImageSerializer
 
         return self.serializer_class
+
     def perform_create(self, serializer):
         """Create a new recipe."""
         serializer.save(user=self.request.user)
-    
+
     @action(methods=['POST'], detail=True, url_path='upload-image')
     def upload_image(self, request, pk=None):
         """Upload an image to recipe."""
@@ -95,6 +95,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @extend_schema_view(
     list=extend_schema(
         parameters=[
@@ -126,26 +128,15 @@ class BaseRecipeAttrViewSet(mixins.DestroyModelMixin,
         return queryset.filter(
             user=self.request.user
         ).order_by('-name').distinct()
-    
+
+
 class TagViewSet(BaseRecipeAttrViewSet):
     """Manage tags in the database."""
     serializer_class = serializers.TagSerializer
     queryset = Tag.objects.all()
-    
-    # def get_queryset(self):
-    #     """Filter queryset to authenticated user."""
-    #     return self.queryset.filter(user=self.request.user).order_by('-name')
-    
 
-# class IngredientViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-# class IngredientViewSet(mixins.UpdateModelMixin,
-#                         mixins.ListModelMixin,
-#                         viewsets.GenericViewSet):
+
 class IngredientViewSet(BaseRecipeAttrViewSet):
     """Manage ingredients in the database."""
     serializer_class = serializers.IngredientSerializer
     queryset = Ingredient.objects.all()
-    # authentication_classes = [TokenAuthentication]
-    # permission_classes = [IsAuthenticated]
-
-    
